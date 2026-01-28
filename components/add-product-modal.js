@@ -1,51 +1,80 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
+import { useInventory } from "@/lib/inventory-context"
+import { useToast } from "@/hooks/use-toast"
+import { Plus, X } from "lucide-react"
+import { cn } from "@/lib/utils"
+import * as DialogPrimitive from '@radix-ui/react-dialog'
 
-import { useState } from 'react'
-import { useInventory } from '@/lib/inventory-context'
-import { useToast } from '@/hooks/use-toast'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-} from '@/components/shared-ui'
-import { Plus } from 'lucide-react'
+// Dialog Components
+function Dialog({ children, ...props }) { return <DialogPrimitive.Root {...props}>{children}</DialogPrimitive.Root> }
+function DialogContent({ className, children, ...props }) {
+  return (
+    <DialogPrimitive.Portal>
+      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+      <DialogPrimitive.Content className={cn('fixed top-1/2 left-1/2 z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] bg-background border rounded-lg p-6 shadow-lg', className)} {...props}>
+        {children}
+        <DialogPrimitive.Close className="absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
+  )
+}
+function DialogHeader({ className, ...props }) { return <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)} {...props} /> }
+function DialogTitle({ className, ...props }) { return <DialogPrimitive.Title className={cn('text-lg font-semibold', className)} {...props} /> }
+function DialogDescription({ className, ...props }) { return <DialogPrimitive.Description className={cn('text-sm text-muted-foreground', className)} {...props} /> }
+function DialogFooter({ className, ...props }) { return <div className={cn('flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-4', className)} {...props} /> }
 
-interface AddProductModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+// Label Component
+function Label({ className, ...props }) {
+  return <label className={cn('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70', className)} {...props} />
 }
 
-export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
+// Input Component
+function Input({ className, type, ...props }) {
+  return <input type={type} className={cn('h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm border-input focus-visible:ring-2 focus-visible:ring-ring', className)} {...props} />
+}
+
+// Button Component
+function Button({ className, variant = "default", size = "default", ...props }) {
+  const variants = {
+    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    outline: 'border bg-background hover:bg-accent hover:text-accent-foreground',
+    ghost: 'hover:bg-accent hover:text-accent-foreground',
+  }
+  const sizes = {
+    default: 'h-9 px-4 py-2',
+    sm: 'h-8 px-3',
+  }
+  return <button className={cn('inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all disabled:opacity-50', variants[variant], sizes[size], className)} {...props} />
+}
+
+export function AddProductModal({ open, onOpenChange }) {
   const { addProduct } = useInventory()
   const { toast } = useToast()
-  
-  const [name, setName] = useState('')
-  const [masterCount, setMasterCount] = useState('')
-  const [availability, setAvailability] = useState('')
-  const [error, setError] = useState('')
+
+  const [name, setName] = useState("")
+  const [masterCount, setMasterCount] = useState("")
+  const [availability, setAvailability] = useState("")
+  const [error, setError] = useState("")
 
   const resetForm = () => {
-    setName('')
-    setMasterCount('')
-    setAvailability('')
-    setError('')
+    setName("")
+    setMasterCount("")
+    setAvailability("")
+    setError("")
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setError('')
+    setError("")
 
     // Validation
     if (!name.trim()) {
-      setError('Please enter a product name')
+      setError("Please enter a product name")
       return
     }
 
@@ -53,25 +82,27 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
     const available = parseInt(availability)
 
     if (isNaN(master) || master <= 0) {
-      setError('Master count must be a positive number')
+      setError("Master count must be a positive number")
       return
     }
 
     if (isNaN(available) || available < 0) {
-      setError('Availability must be a non-negative number')
+      setError("Availability must be a non-negative number")
       return
     }
 
     if (available > master) {
-      setError('Availability cannot exceed master count')
+      setError("Availability cannot exceed master count")
       return
     }
 
     addProduct(name.trim(), master, available)
+
     toast({
-      title: 'Product Added',
+      title: "Product Added",
       description: `${name.trim()} has been added to inventory successfully.`,
     })
+
     resetForm()
     onOpenChange(false)
   }
@@ -82,7 +113,8 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
   }
 
   const handleSetAvailabilityToMasterCount = () => {
-    if (masterCount && !isNaN(parseInt(masterCount)) && parseInt(masterCount) > 0) {
+    const master = parseInt(masterCount)
+    if (!isNaN(master) && master > 0) {
       setAvailability(masterCount)
     }
   }
@@ -113,7 +145,7 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="masterCount">Master Count</Label>
             <p className="text-xs text-muted-foreground">
@@ -128,7 +160,7 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
               onChange={(e) => setMasterCount(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="availability">Availability</Label>

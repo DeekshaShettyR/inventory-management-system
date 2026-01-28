@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/auth-context'
+import { useEffect } from "react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth()
@@ -11,9 +11,9 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard/products')
+      router.push("/dashboard/products")
     } else {
-      router.push('/login')
+      router.push("/login")
     }
   }, [isAuthenticated, router])
 

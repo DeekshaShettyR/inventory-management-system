@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "app/dashboard/analytics/page.js", "app/dashboard/layout.js", "components/add-product-modal.js", "app/layout.js", "app/register/page.js", "app/login/page.js", "components/pages/analytics-page.js", "components/pages/login-page.js", "components/pages/products-page.js", "components/pages/register-page.js", "app/dashboard/products/page.js", "components/borrow-records-modal.js", "components/edit-product-modal.js", "components/navbar.js", "components/product-card.js", "components/shared-ui.js", "components/theme-provider.js", "hooks/use-mobile.js", "hooks/use-toast.js", "lib/auth-context.js", "lib/inventory-context.js", "lib/utils.js"  ],
   "exclude": [
     "node_modules"
   ]

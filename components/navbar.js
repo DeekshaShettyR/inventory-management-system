@@ -1,17 +1,13 @@
 "use client"
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/auth-context'
-import { useInventory } from '@/lib/inventory-context'
-import { Button, Input } from '@/components/shared-ui'
-import { BarChart3, LogOut, Search, Menu, X, Package } from 'lucide-react'
-import { useState } from 'react'
-import { cn } from '@/lib/utils'
-
-// NOTE: Mobile menu state should ideally be managed with URL params or state machine
-// TODO: Add dropdown menu for user profile
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
+import { useInventory } from "@/lib/inventory-context"
+import { BarChart3, LogOut, Search, Menu, X, Package } from "lucide-react"
+import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -22,12 +18,12 @@ export function Navbar() {
 
   const handleLogout = () => {
     logout()
-    router.push('/login')
+    router.push("/login")
   }
 
   const navLinks = [
-    { href: '/dashboard/products', label: 'Products', icon: Package },
-    { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+    { href: "/dashboard/products", label: "Products", icon: Package },
+    { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   ]
 
   return (
@@ -43,7 +39,9 @@ export function Navbar() {
             className="rounded"
             priority
           />
-          <span className="font-semibold hidden sm:inline-block">Technical Career Education</span>
+          <span className="font-semibold hidden sm:inline-block">
+            Technical Career Education
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -71,38 +69,40 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
+            <input 
               type="search"
               placeholder="Search products..."
-              className="w-64 pl-9"
-              style={{ border: '2px solid oklch(24.571% 0.12604 288.685)' }}
+              className="w-64 pl-9 h-9 rounded-md border bg-transparent px-3 py-1 text-sm border-input focus-visible:ring-2 focus-visible:ring-ring"
+              style={{ border: "2px solid oklch(24.571% 0.12604 288.685)" }}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          
+
           {user && (
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">
                 {user.username}
               </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <button className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all disabled:opacity-50 h-8 px-3 hover:bg-accent hover:text-accent-foreground" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
-              </Button>
+              </button>
             </div>
           )}
         </div>
 
         {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
+        <button
+          className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all disabled:opacity-50 h-9 w-9 shrink-0 md:hidden hover:bg-accent hover:text-accent-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </Button>
+          {mobileMenuOpen ? (
+            <X className="w-5 h-5" />
+          ) : (
+            <Menu className="w-5 h-5" />
+          )}
+        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -112,10 +112,10 @@ export function Navbar() {
             {/* Mobile Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
+              <input
                 type="search"
                 placeholder="Search products..."
-                className="w-full pl-9"
+                className="w-full pl-9 h-9 rounded-md border bg-transparent px-3 py-1 text-sm border-input focus-visible:ring-2 focus-visible:ring-ring"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -151,10 +151,10 @@ export function Navbar() {
                 <span className="text-sm text-muted-foreground">
                   Signed in as {user.username}
                 </span>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <button className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all disabled:opacity-50 h-8 px-3 hover:bg-accent hover:text-accent-foreground" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
-                </Button>
+                </button>
               </div>
             )}
           </div>

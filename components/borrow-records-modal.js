@@ -1,60 +1,166 @@
 "use client"
 
-import React from "react"
-
-import { useState } from 'react'
-import type { Product } from '@/lib/types'
+import React, { useState } from "react"
 import { useInventory } from '@/lib/inventory-context'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Badge,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/shared-ui'
-import { Plus } from 'lucide-react'
+import { Plus, X, ChevronDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import * as DialogPrimitive from '@radix-ui/react-dialog'
+import * as TabsPrimitive from '@radix-ui/react-tabs'
+import * as SelectPrimitive from '@radix-ui/react-select'
 
-interface BorrowRecordsModalProps {
-  product: Product | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+// Dialog Components
+function Dialog({ children, ...props }) { return <DialogPrimitive.Root {...props}>{children}</DialogPrimitive.Root> }
+function DialogContent({ className, children, ...props }) {
+  return (
+    <DialogPrimitive.Portal>
+      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+      <DialogPrimitive.Content className={cn('fixed top-1/2 left-1/2 z-50 w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] bg-background border rounded-lg p-6 shadow-lg max-h-[90vh] overflow-y-auto', className)} {...props}>
+        {children}
+        <DialogPrimitive.Close className="absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
+  )
+}
+function DialogHeader({ className, ...props }) { return <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)} {...props} /> }
+function DialogTitle({ className, ...props }) { return <DialogPrimitive.Title className={cn('text-lg font-semibold', className)} {...props} /> }
+function DialogDescription({ className, ...props }) { return <DialogPrimitive.Description className={cn('text-sm text-muted-foreground', className)} {...props} /> }
+
+// Tabs Components
+function Tabs({ className, ...props }) { return <TabsPrimitive.Root className={cn('flex flex-col', className)} {...props} /> }
+function TabsList({ className, ...props }) { return <TabsPrimitive.List className={cn('inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground', className)} {...props} /> }
+function TabsTrigger({ className, ...props }) {
+  return (
+    <TabsPrimitive.Trigger
+      className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm', className)}
+      {...props}
+    />
+  )
+}
+function TabsContent({ className, ...props }) { return <TabsPrimitive.Content className={cn('mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2', className)} {...props} /> }
+
+// Table Components
+function Table({ className, ...props }) {
+  return (
+    <div className="w-full overflow-x-auto">
+      <table className={cn("w-full text-sm", className)} {...props} />
+    </div>
+  )
+}
+const TableHeader = (props) => <thead {...props} />
+const TableBody = (props) => <tbody {...props} />
+function TableRow({ className, ...props }) {
+  return <tr className={cn("border-b hover:bg-muted/50 transition", className)} {...props} />
+}
+function TableHead({ className, ...props }) {
+  return <th className={cn("px-2 h-10 text-left font-medium", className)} {...props} />
+}
+function TableCell({ className, ...props }) {
+  return <td className={cn("px-2 py-2", className)} {...props} />
 }
 
-export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecordsModalProps) {
+// Badge Component
+function Badge({ className, variant = "default", ...props }) {
+  const variants = {
+    default: 'bg-primary text-primary-foreground',
+    secondary: 'bg-secondary text-secondary-foreground',
+  }
+  return <div className={cn("inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border", variants[variant], className)} {...props} />
+}
+
+// Label Component
+function Label({ className, ...props }) {
+  return <label className={cn('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70', className)} {...props} />
+}
+
+// Input Component
+function Input({ className, type, ...props }) {
+  return <input type={type} className={cn('h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm border-input focus-visible:ring-2 focus-visible:ring-ring', className)} {...props} />
+}
+
+// Select Components
+function Select({ value, onValueChange, children, ...props }) {
+  return <SelectPrimitive.Root value={value} onValueChange={onValueChange} {...props}>{children}</SelectPrimitive.Root>
+}
+function SelectTrigger({ className, children, ...props }) {
+  return (
+    <SelectPrimitive.Trigger
+      className={cn('flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1', className)}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="h-4 w-4 opacity-50" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  )
+}
+function SelectContent({ className, ...props }) {
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        className={cn('relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2', className)}
+        {...props}
+      >
+        <SelectPrimitive.Viewport className="p-1">
+          {props.children}
+        </SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  )
+}
+function SelectItem({ className, ...props }) {
+  return (
+    <SelectPrimitive.Item
+      className={cn('relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50', className)}
+      {...props}
+    >
+      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="h-4 w-4" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <SelectPrimitive.ItemText />
+    </SelectPrimitive.Item>
+  )
+}
+function SelectValue(props) {
+  return <SelectPrimitive.Value {...props} />
+}
+
+// Button Component
+function Button({ className, variant = "default", size = "default", ...props }) {
+  const variants = {
+    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    outline: 'border bg-background hover:bg-accent hover:text-accent-foreground',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+  }
+  const sizes = {
+    default: 'h-9 px-4 py-2',
+    sm: 'h-8 px-3',
+  }
+  return <button className={cn('inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all disabled:opacity-50', variants[variant], sizes[size], className)} {...props} />
+}
+
+const Check = () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+
+export function BorrowRecordsModal({ product, open, onOpenChange }) {
   const { getProductRecords, addBorrowRecord } = useInventory()
-  
-  // Get today's date in YYYY-MM-DD format
+
   const getTodayDate = () => {
     const today = new Date()
     return today.toISOString().split('T')[0]
   }
-  
+
   const [studentName, setStudentName] = useState('')
   const [usn, setUsn] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [section, setSection] = useState('')
   const [takenDate, setTakenDate] = useState(getTodayDate())
   const [returnDate, setReturnDate] = useState('')
-  const [recordType, setRecordType] = useState<'borrow' | 'purchase'>('borrow')
+  const [recordType, setRecordType] = useState('borrow')
   const [quantity, setQuantity] = useState('1')
   const [error, setError] = useState('')
 
@@ -67,18 +173,17 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
     setUsn('')
     setPhoneNumber('')
     setSection('')
-    setTakenDate('')
+    setTakenDate(getTodayDate())
     setReturnDate('')
     setRecordType('borrow')
     setQuantity('1')
     setError('')
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
 
-    // Validation
     if (!studentName.trim() || !usn.trim() || !phoneNumber.trim() || !section.trim() || !takenDate) {
       setError('Please fill in all required fields')
       return
@@ -94,7 +199,6 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
       return
     }
 
-    // Validate return date if provided
     if (returnDate && returnDate <= takenDate) {
       setError('Return date must be greater than taken date')
       return
@@ -106,7 +210,6 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
       return
     }
 
-    // Check stock availability
     if (recordType === 'borrow' && qty > product.availability) {
       setError(`Not enough available stock. Maximum: ${product.availability}`)
       return
@@ -126,7 +229,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
       takenDate,
       returnDate: returnDate || '',
       type: recordType,
-      quantity: qty
+      quantity: qty,
     })
 
     resetForm()
@@ -152,7 +255,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
             <TabsTrigger value="records">View Records</TabsTrigger>
             <TabsTrigger value="add">Add New Entry</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="records" className="mt-4">
             {records.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
@@ -193,7 +296,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="add" className="mt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
@@ -212,7 +315,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     onChange={(e) => setStudentName(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="usn">USN * (10 characters max)</Label>
                   <Input
@@ -223,7 +326,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     onChange={(e) => setUsn(e.target.value.slice(0, 10))}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number * (10 digits)</Label>
                   <Input
@@ -235,7 +338,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="section">Section *</Label>
                   <Input
@@ -245,12 +348,14 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     onChange={(e) => setSection(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="recordType">Type *</Label>
-                  <Select value={recordType} onValueChange={(v) => setRecordType(v as 'borrow' | 'purchase')}>
+                  <Select value={recordType} onValueChange={(v) => setRecordType(v)}>
                     <SelectTrigger id="recordType">
-                      <SelectValue />
+                      <SelectValue placeholder="Select type">
+                        {recordType === 'borrow' ? 'Borrow (decreases availability)' : 'Purchase (decreases master count)'}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="borrow">Borrow (decreases availability)</SelectItem>
@@ -258,7 +363,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="quantity">Quantity *</Label>
                   <Input
@@ -270,7 +375,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     onChange={(e) => setQuantity(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="takenDate">Taken Date *</Label>
                   <Input
@@ -280,7 +385,7 @@ export function BorrowRecordsModal({ product, open, onOpenChange }: BorrowRecord
                     onChange={(e) => setTakenDate(e.target.value)}
                   />
                 </div>
-                
+
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="returnDate">Return Date (optional)</Label>
                   <Input
