@@ -299,7 +299,7 @@ export function AnalyticsPage() {
       <h1 className="text-2xl font-bold">Analytics</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card style={{ border: '2px solid oklch(24.571% 0.12604 288.685)' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Package className="h-4 w-4" />
@@ -309,7 +309,7 @@ export function AnalyticsPage() {
           <CardContent>{products.length}</CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ border: '2px solid oklch(24.571% 0.12604 288.685)' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -319,7 +319,7 @@ export function AnalyticsPage() {
           <CardContent>{utilizationRate}%</CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ border: '2px solid oklch(24.571% 0.12604 288.685)' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -329,7 +329,7 @@ export function AnalyticsPage() {
           <CardContent>{totalMasterCount}</CardContent>
         </Card>
 
-        <Card>
+        <Card style={{ border: '2px solid oklch(24.571% 0.12604 288.685)' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingDown className="h-4 w-4" />
@@ -404,8 +404,8 @@ export function AnalyticsPage() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader className="flex items-center justify-between">
+      <Card style={{ border: '2px solid oklch(24.571% 0.12604 288.685)' }}>
+        <CardHeader className="flex items-center justify-between border">
           <CardTitle>Monthly Report</CardTitle>
           {monthlyData.length > 0 && (
             <Button

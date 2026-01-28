@@ -172,8 +172,38 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
+         style={{
+           backgroundImage: "url('/background_image.jpg')",
+           backgroundSize: 'cover',
+           backgroundPosition: 'center',
+           backgroundRepeat: 'no-repeat',
+           backgroundAttachment: 'fixed'
+         }}>
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/40"></div>
+      
+      {/* Animated mesh gradient background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/30 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/30 rounded-full filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-secondary/20 rounded-full filter blur-3xl opacity-15 animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+      
+      {/* Register Card */}
+      <div className="relative z-10 w-full max-w-md group">
+        {/* Animated gradient border effect */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-2xl opacity-0 group-hover:opacity-20 blur transition duration-1000 -z-10"></div>
+        
+        <Card className="shadow-2xl border border-primary/40 bg-background/85 backdrop-blur-xl hover:shadow-3xl transition-all duration-500 ease-out relative overflow-hidden"
+              style={{
+                boxShadow: '0 8px 32px 0 rgba(99, 102, 241, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15)',
+                animation: 'slideUp 0.6s ease-out'
+              }}>
+          
+          {/* Animated top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary"></div>
+          
         <CardHeader>
           <Image
             src="/technical_career_education_logo.jpg"
@@ -255,6 +285,7 @@ export function RegisterPage() {
           </CardFooter>
         </form>
       </Card>
+      </div>
     </div>
   )
 }

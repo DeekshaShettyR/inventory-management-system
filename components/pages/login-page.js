@@ -21,8 +21,10 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-white hover:bg-destructive/90",
-        outline: "border bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        outline:
+          "border bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
@@ -52,7 +54,7 @@ function Button({ className, variant, size, asChild = false, ...props }) {
 
 /* ---------------- Input ---------------- */
 
-function Input({ className, type, ...props }) {
+function Input({ className, type = "text", ...props }) {
   return (
     <input
       type={type}
@@ -81,21 +83,32 @@ function Label({ className, ...props }) {
 
 /* ---------------- Card ---------------- */
 
-function Card({ className, ...props }) {
+function Card({ className, style, ...props }) {
   return (
     <div
       className={cn(
         "bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 shadow-sm",
         className
       )}
-      style={{ border: "2px solid oklch(24.571% 0.12604 288.685)" }}
+      style={{
+        border: "2px solid oklch(24.571% 0.12604 288.685)",
+        ...style,
+      }}
       {...props}
     />
   )
 }
 
 function CardHeader({ className, ...props }) {
-  return <div className={cn("px-6 text-center flex flex-col items-center justify-center", className)} {...props} />
+  return (
+    <div
+      className={cn(
+        "px-6 text-center flex flex-col items-center justify-center",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 function CardTitle({ className, ...props }) {
@@ -141,98 +154,170 @@ export function LoginPage() {
       return
     }
 
-    const success = login(username, password)
+    const success = await login(username, password)
 
     if (success) {
       router.push("/dashboard/products")
     } else {
       setError("Invalid username or password")
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <div className="mx-auto mb-4">
-            <Image
-              src="/technical_career_education_logo.jpg"
-              alt="Logo"
-              width={80}
-              height={80}
-              className="rounded-lg"
-              priority
-            />
-          </div>
-          <CardTitle
-            className="text-2xl font-bold"
-            style={{ color: "oklch(24.571% 0.12604 288.685)" }}
+    <>
+      <div
+        className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/background_image.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
+        }}
+      >
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/40" />
+
+        {/* Mesh gradient blobs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/30 rounded-full filter blur-3xl opacity-20 animate-pulse" />
+          <div
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/30 rounded-full filter blur-3xl opacity-20 animate-pulse"
+            style={{ animationDelay: "2s" }}
+          />
+          <div
+            className="absolute top-1/3 left-1/4 w-72 h-72 bg-secondary/20 rounded-full filter blur-3xl opacity-15 animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
+        </div>
+
+        {/* Login Card */}
+        <div className="relative z-10 w-full max-w-md group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary via-accent to-secondary rounded-2xl opacity-0 group-hover:opacity-20 blur transition duration-1000 -z-10" />
+
+          <Card
+            className="shadow-2xl border border-primary/40 bg-background/85 backdrop-blur-xl hover:shadow-3xl transition-all duration-500 ease-out relative overflow-hidden"
+            style={{
+              boxShadow:
+                "0 8px 32px 0 rgba(99, 102, 241, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15)",
+              animation: "slideUp 0.6s ease-out",
+            }}
           >
-            Welcome Back
-          </CardTitle>
-          <CardDescription>
-            Sign in to your inventory management account
-          </CardDescription>
-        </CardHeader>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary" />
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
+            <CardHeader>
+              <div className="mx-auto mb-4">
+                <Image
+                  src="/technical_career_education_logo.jpg"
+                  alt="Logo"
+                  width={80}
+                  height={80}
+                  className="rounded-lg"
+                  priority
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff /> : <Eye />}
-                </Button>
               </div>
-            </div>
-          </CardContent>
+              <CardTitle
+                className="text-2xl font-bold"
+                style={{ color: "oklch(24.571% 0.12604 288.685)" }}
+              >
+                Welcome Back
+              </CardTitle>
+              <CardDescription>
+                Sign in to your inventory management account
+              </CardDescription>
+            </CardHeader>
 
-          <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
+            <form onSubmit={handleSubmit}>
+              <CardContent className="space-y-4">
+                {error && (
+                  <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                    {error}
+                  </div>
+                )}
 
-            <p className="text-sm text-muted-foreground text-center">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-primary hover:underline">
-                Register
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+
+              <CardFooter>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Signing in..." : "Sign In"}
+                </Button>
+
+                <p className="text-sm text-muted-foreground text-center color-foreground">
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    href="/register"
+                    className="text-primary hover:underline"
+                  >
+                    Register
+                  </Link>
+                </p>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        input:focus {
+          animation: focusGlow 0.3s ease-out;
+        }
+
+        @keyframes focusGlow {
+          0% {
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.1);
+          }
+          70% {
+            box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+          }
+        }
+      `}</style>
+    </>
   )
 }
